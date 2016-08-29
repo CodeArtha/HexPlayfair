@@ -2,6 +2,7 @@ package net.codeartha.hexplayfair.common;
 
 import java.awt.Point;
 
+import net.codeartha.hexplayfair.reference.References;
 import net.codeartha.hexplayfair.common.PairPointReturn;
 import net.codeartha.hexplayfair.utils.StringHelper;
 
@@ -13,9 +14,9 @@ import net.codeartha.hexplayfair.utils.StringHelper;
  * 
  */
 public class HexPlayfair {
-	private String[][] keyGrid = new String[5][5]; // String[3][5] create array
-													// of 3 rows 5 columns =>
-													// keyGrid[y][x]
+	private String[][] keyGrid = new String[References.ARRAY_SIZE][References.ARRAY_SIZE]; // String[3][5] create array
+																						 // of 3 rows 5 columns =>
+																						 // keyGrid[y][x]
 	private String key = "";
 	private String msgIn = "";
 	private String msgOut = "";
@@ -178,10 +179,10 @@ public class HexPlayfair {
 	 * interactive display Prints the keyGrid directly to console output.
 	 */
 	public void printKeyGrid() {
-		for (int y = 0; y <= 4; y++) // = lines = y
+		for (int y = 0; y <= References.ARRAY_SIZE; y++) // = lines = y
 		{
 			String temp = "";
-			for (int x = 0; x <= 4; x++) // = columns = x
+			for (int x = 0; x <= References.ARRAY_SIZE; x++) // = columns = x
 			{
 				temp = temp + " [" + this.keyGrid[y][x] + "]";
 			}
@@ -194,19 +195,17 @@ public class HexPlayfair {
 	 * letters of the alphabet
 	 */
 	public void generateKeyGrid() {
-		this.key = StringHelper
-				.removeDuplicates((this.key + "abcdefghijklmnopqrstuvwxyz")
-						.replace('v', 'u'));
+		this.key = StringHelper.removeDuplicates(this.key + "0123456789abcdef");
 
 		int k = 0;
-		for (int y = 0; y <= 4; y++) {
-			for (int x = 0; x <= 4; x++) {
+		for (int y = 0; y <= References.ARRAY_SIZE; y++) {
+			for (int x = 0; x <= References.ARRAY_SIZE; x++) {
 				this.keyGrid[y][x] = Character.toString(this.key.charAt(k));
 				k++;
 			}
 		}
-
-		this.clearKey(); // good time to erase the key, not needed later anyway
+		// not in the binary version anymore, key might be needed to generate file header
+		//this.clearKey(); // good time to erase the key, not needed later anyway
 	}
 
 	/**
@@ -217,13 +216,11 @@ public class HexPlayfair {
 	 */
 	public void generateKeyGrid(String secret) {
 		this.key = secret.toLowerCase();
-		this.key = StringHelper
-				.removeDuplicates((this.key + "abcdefghijklmnopqrstuvwxyz")
-						.replace('v', 'u'));
+		this.key = StringHelper.removeDuplicates(this.key + "0123456789abcdef");
 
 		int k = 0;
-		for (int y = 0; y <= 4; y++) {
-			for (int x = 0; x <= 4; x++) {
+		for (int y = 0; y <= References.ARRAY_SIZE; y++) {
+			for (int x = 0; x <= References.ARRAY_SIZE; x++) {
 				this.keyGrid[y][x] = Character.toString(this.key.charAt(k));
 				k++;
 			}
@@ -260,17 +257,17 @@ public class HexPlayfair {
 																	// column
 		{
 			cryptA.x = clearA.x;
-			cryptA.y = (clearA.y + 1) % 5;
+			cryptA.y = (clearA.y + 1) % References.GRID_SIZE;
 			cryptB.x = clearB.x;
-			cryptB.y = (clearB.y + 1) % 5;
+			cryptB.y = (clearB.y + 1) % References.GRID_SIZE;
 			return new PairPointReturn(cryptA, cryptB);
 		} else if (clearA.y == clearB.y && clearA.x != clearB.x) // letters on
 																	// the same
 																	// row
 		{
-			cryptA.x = (clearA.x + 1) % 5;
+			cryptA.x = (clearA.x + 1) % References.GRID_SIZE;
 			cryptA.y = clearA.y;
-			cryptB.x = (clearB.x + 1) % 5;
+			cryptB.x = (clearB.x + 1) % References.GRID_SIZE;
 			cryptB.y = clearB.y;
 			return new PairPointReturn(cryptA, cryptB);
 		} else // letters form a rectangle
@@ -312,13 +309,13 @@ public class HexPlayfair {
 																			// column
 		{
 			clearA.x = cryptedA.x;
-			clearA.y = (cryptedA.y + 4) % 5; // +4 mod(5) to solve the issue
+			clearA.y = (cryptedA.y + References.GRID_SIZE - 1) % References.GRID_SIZE; // +4 mod(5) to solve the issue
 												// with removing 1 that
 												// sometimes gives negative
 												// numbers instead of looping
 												// around
 			clearB.x = cryptedB.x;
-			clearB.y = (cryptedB.y + 4) % 5;
+			clearB.y = (cryptedB.y + References.GRID_SIZE - 1) % References.GRID_SIZE;
 			return new PairPointReturn(clearA, clearB);
 		} else if (cryptedA.y == cryptedB.y && cryptedA.x != cryptedB.x) // two
 																			// letters
@@ -327,9 +324,9 @@ public class HexPlayfair {
 																			// same
 																			// row
 		{
-			clearA.x = (cryptedA.x + 4) % 5;
+			clearA.x = (cryptedA.x + References.GRID_SIZE - 1) % References.GRID_SIZE;
 			clearA.y = cryptedA.y;
-			clearB.x = (cryptedB.x + 4) % 5;
+			clearB.x = (cryptedB.x + References.GRID_SIZE - 1) % References.GRID_SIZE;
 			clearB.y = cryptedB.y;
 			return new PairPointReturn(clearA, clearB);
 		} else // two letters form a rectangle
