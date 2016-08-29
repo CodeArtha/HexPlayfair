@@ -1,6 +1,5 @@
 package net.codeartha.hexplayfair;
 
-import net.codeartha.hexplayfair.common.HexPlayfair;
 import net.codeartha.hexplayfair.reference.References;
 
 /*
