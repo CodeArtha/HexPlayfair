@@ -37,7 +37,7 @@ public class FileHelper {
 		return newPath;
 	}
 
-	/*
+	/**
 	 * Generates unencrypted headers to append at the start of files to keep
 	 * track of original file name, author, creation date,...
 	 */
